@@ -197,11 +197,11 @@ artifacts:
 
  deploy:
  
-release: myproduct-v$(APPVEYOR_BUILD_VERSION)
+release: M1
   description: 'Release description'
   provider: GitHub
   auth_token:
-    secure: <your encrypted token> # your encrypted token from GitHub
+    secure: 4d7b2bcb2ba5f94da18708cd0e9a175ff3fb8c27 # your encrypted token from GitHub
   artifact: /.*\.nupkg/            # upload all NuGet packages to release assets
   draft: false
   prerelease: false
