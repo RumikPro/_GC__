@@ -195,7 +195,7 @@ artifacts:
 - path: GCversionWindows.txt
   name: GCversionWindows
 
-deploy:
+deploy: 
   release: 
   description: 
   provider: GitHub
