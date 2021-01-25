@@ -195,16 +195,15 @@ artifacts:
 - path: GCversionWindows.txt
   name: GCversionWindows
 
- deploy:
- 
-release: M1
-  description: 'Release description'
+deploy:
+  release: 
+  description: 
   provider: GitHub
   auth_token:
     secure: 4d7b2bcb2ba5f94da18708cd0e9a175ff3fb8c27 # your encrypted token from GitHub
-  artifact: /.*\.nupkg/            # upload all NuGet packages to release assets
+  artifact:            # upload all NuGet packages to release assets
   draft: false
-  prerelease: false
+  prerelease: true
   on:
     branch: master                 # release from master branch only
     APPVEYOR_REPO_TAG: true        # deploy on tag push only
