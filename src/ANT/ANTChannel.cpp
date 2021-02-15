@@ -790,8 +790,7 @@ void ANTChannel::broadcastEvent(unsigned char *ant_message)
            // Cadence
            case CHANNEL_TYPE_CADENCE:
            {
-               int cad_count;
-               float rpm;
+                 float rpm;
                static float last_measured_rpm;
                 uint16_t time;
                // check whether time rollover has occurred and if so, correct the time 
@@ -809,18 +808,13 @@ void ANTChannel::broadcastEvent(unsigned char *ant_message)
                    rpm = 1024*60*revs / time;
                    last_measured_rpm = rpm;
                    lastMessageTimestamp = parent->getElapsedTime();
-                   cad_count = 0;
-
-               } else {// if the measurements stay the same for 8 consequtive messages (i.e. 2 secs) 
-                       // then assume pedalling is stopped meanwhile keep the rpm as previous reading
-                   cad_count++;
-                   rpm = last_measured_rpm;
-                   if (cad_count > 8) { 
-                       rpm = 0.0;
-                       last_measured_rpm = 0.0;
-                   }
                   
-                }
+
+               } else {// if the time of the present cadence event is the same as the previous
+                       // then assume pedalling is stopped                
+                    rpm = 0.0;
+                    last_measured_rpm = rpm;
+               }
                parent->setCadence(rpm);
                value2 = value = rpm;
            }
