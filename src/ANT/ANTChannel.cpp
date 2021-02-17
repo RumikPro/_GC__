@@ -790,30 +790,52 @@ void ANTChannel::broadcastEvent(unsigned char *ant_message)
            // Cadence
            case CHANNEL_TYPE_CADENCE:
            {
-                 float rpm;
+               float rpm;
                static float last_measured_rpm;
-                uint16_t time;
+               uint16_t time;
+               uint16_t revs;
+               int cad_count;
+
                // check whether time rollover has occurred and if so, correct the time 
                if (antMessage.crankMeasurementTime < lastMessage.crankMeasurementTime) {
                    time = 0xFFFF - lastMessage.crankMeasurementTime + antMessage.crankMeasurementTime;
                }
                 else {
-                    time = antMessage.crankMeasurementTime - lastMessage.crankMeasurementTime;
+                time = antMessage.crankMeasurementTime - lastMessage.crankMeasurementTime;
                }
-             //  uint16_t time = antMessage.crankMeasurementTime - lastMessage.crankMeasurementTime;
+               // check whether crankrevs rollover has occurred and if so correct the value
+               if (antMessage.crankRevolutions < lastMessage.crankRevolutions) {
+                   revs = 0xFFFF - lastMessage.crankRevolutions + antMessage.crankRevolutions;
+               }
+               else {
+                   revs = antMessage.crankRevolutions - lastMessage.crankRevolutions;
+               }
 
-               uint16_t revs = antMessage.crankRevolutions - lastMessage.crankRevolutions;
+             //  uint16_t time = antMessage.crankMeasurementTime - lastMessage.crankMeasurementTime;           
 
                if (time) {
                    rpm = 1024*60*revs / time;
                    last_measured_rpm = rpm;
                    lastMessageTimestamp = parent->getElapsedTime();
-                  
+                   if (rpm > 100) {
+                       rpm = rpm / 2.0;
+                   } // corrects for doubling of rpm error but limits rpm 
+                   cad_count = 0;  // zero the counter
 
-               } else {// if the time of the present cadence event is the same as the previous
-                       // then assume pedalling is stopped                
-                    rpm = 0.0;
-                    last_measured_rpm = rpm;
+               } else {
+                   //qint64 ms = parent->getElapsedTime() - lastMessageTimestamp;
+                   //rpm = qMin((float)(1000.0*60.0*1.0) / ms, parent->getCadence());
+                   // If we received a message but timestamp remain unchanged then we know that sensor have not detected magnet thus we deduct that rpm cannot be higher than this
+               //    if (rpm < last_measured_rpm / 2.0)
+               //        rpm = 0.0; // if rpm is less than half previous cadence we consider that we are stopped
+                   //if (rpm < last_measured_rpm / 4.0)
+                    //           rpm = 0.0; // if rpm is less than one quarter previous cadence we consider that we are stopped
+                   cad_count = cad_count + 1;
+                   if (cad_count > 7) {
+                       rpm = 0.0;
+                   } // if more than seven consecutive zero time changes then assume stopped pedalling
+				     // this takes about 2 seconds to be activated
+
                }
                parent->setCadence(rpm);
                value2 = value = rpm;
