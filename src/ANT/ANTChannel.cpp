@@ -794,7 +794,7 @@ void ANTChannel::broadcastEvent(unsigned char *ant_message)
                static float last_measured_rpm;
                uint16_t time;
                uint16_t revs;
-               int cad_count;
+              
 
                // check whether time rollover has occurred and if so, correct the time 
                if (antMessage.crankMeasurementTime < lastMessage.crankMeasurementTime) {
@@ -820,23 +820,19 @@ void ANTChannel::broadcastEvent(unsigned char *ant_message)
                    if (rpm > 100) {
                        rpm = rpm / 2.0;
                    } // corrects for doubling of rpm error but limits rpm 
-                   cad_count = 0;  // zero the counter
+                 
 
                } else {
-                   //qint64 ms = parent->getElapsedTime() - lastMessageTimestamp;
-                   //rpm = qMin((float)(1000.0*60.0*1.0) / ms, parent->getCadence());
+                   qint64 ms = parent->getElapsedTime() - lastMessageTimestamp;
+                   rpm = qMin((float)(1000.0*60.0*1.0) / ms, parent->getCadence());
                    // If we received a message but timestamp remain unchanged then we know that sensor have not detected magnet thus we deduct that rpm cannot be higher than this
-               //    if (rpm < last_measured_rpm / 2.0)
-               //        rpm = 0.0; // if rpm is less than half previous cadence we consider that we are stopped
-                   //if (rpm < last_measured_rpm / 4.0)
-                    //           rpm = 0.0; // if rpm is less than one quarter previous cadence we consider that we are stopped
-                   cad_count = cad_count + 1;
-                   if (cad_count > 7) {
-                       rpm = 0.0;
-                   } // if more than seven consecutive zero time changes then assume stopped pedalling
-				     // this takes about 2 seconds to be activated
-
-               }
+                  // if (rpm < last_measured_rpm / 2.0){
+                  //     rpm = 0.0; // if rpm is less than half previous cadence we consider that we are stopped
+		  // }
+                   if (rpm < last_measured_rpm / 4.0){
+                               rpm = 0.0; // if rpm is less than one quarter previous cadence we consider that we are stopped
+		   }
+              	 }
                parent->setCadence(rpm);
                value2 = value = rpm;
            }
