@@ -237,10 +237,7 @@ struct setChannelAtom {
 #define ANT_SPORT_POWER_PERIOD 8182
 #define ANT_SPORT_FOOTPOD_PERIOD 8134
 #define ANT_SPORT_SPEED_PERIOD 8118
-//
-// cadence period doubled to reduce number messages per second to two
-#define ANT_SPORT_CADENCE_PERIOD 16204
-//
+#define ANT_SPORT_CADENCE_PERIOD 8102
 #define ANT_SPORT_SandC_PERIOD 8086
 #define ANT_SPORT_CONTROL_PERIOD 8192
 #define ANT_SPORT_KICKR_PERIOD 2048
