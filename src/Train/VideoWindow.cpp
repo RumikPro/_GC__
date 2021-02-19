@@ -554,8 +554,16 @@ void VideoWindow::telemetryUpdate(RealtimeData rtd)
             }
             else if (rtd.getTrainerBrakeFault())
             {
-                p_meterWidget->setColor(QColor(255,0,0,180));
+               // Do not show brake fault text in simulation mode
+                if (rtd.mode != ERG && rtd.mode != MRC)
+                {
+                    p_meterWidget->setColor(QColor(255, 0, 0, 180));
+                    p_meterWidget->Text = tr("");
+                }
+                else {
+                p_meterWidget->setColor(QColor(255, 0, 0, 180));
                 p_meterWidget->Text = tr("brake fault");
+                }
             }
             else if (rtd.getTrainerReady())
             {
